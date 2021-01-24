@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <CustomBuild Include="C:\Users\Admin\Documents\ACROSS COMPUTERS\organization docs\Computer Science\CSCE 441\L01\CMakeLists.txt" />
+    <CustomBuild Include="C:\Users\Admin\Documents\ACROSS COMPUTERS\organization docs\Computer Science\CSCE 441\A1\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

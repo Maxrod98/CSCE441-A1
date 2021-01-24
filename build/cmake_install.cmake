@@ -1,8 +1,8 @@
-# Install script for directory: C:/Users/Admin/Documents/ACROSS COMPUTERS/organization docs/Computer Science/CSCE 441/L01
+# Install script for directory: C:/Users/Admin/Documents/ACROSS COMPUTERS/organization docs/Computer Science/CSCE 441/A1
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/L01")
+  set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/A1")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
