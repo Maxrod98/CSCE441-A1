@@ -9,8 +9,8 @@ using namespace std;
 
 void ShapeDrawer::drawTriangle(shared_ptr<Triangle> t) {
 	Triangle resizedT = Triangle(t->getVertices());
-	resizedT.applyRatio(getOverallRatio());
-	//these two translations must be the same for
+	resizedT.applyRatio(getOverallRatio()); //TODO: remove side effect: the vertex from the original triangle get affected too when adjusting for ratio
+	
 	int translationY = (desiredHeight - boundedBox.getHeight()) / 2;
 	int translationX = (desiredWidth - boundedBox.getWidth()) / 2;
 	resizedT.applyTranslation(translationX, translationY , 0);
