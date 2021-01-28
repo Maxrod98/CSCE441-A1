@@ -1,41 +1,46 @@
 #include "BoundedBox.h"
 #include <algorithm>
+#include <limits.h>
+
+
+
+using namespace std;
 
 BoundedBox::BoundedBox() {
 }
 
-BoundedBox::BoundedBox(vector<shared_ptr<Vertex>> vertices): vertices(vertices) {
+BoundedBox::BoundedBox(vector<shared_ptr<Vertex>> vertices): Shape(vertices) {
 }
 
 BoundedBox::BoundedBox(vector<shared_ptr<Vertex>> vertices, shared_ptr<Color> _color): BoundedBox(vertices) {
 	this->color = _color;
 }
 
-int BoundedBox::getXMin() {
-	return getMin(vertices, Vertex::X);
+double BoundedBox::getXMin() {
+	return getMin(v, Vertex::X);
 }
-int BoundedBox::getYMin() {
-	return getMin(vertices, Vertex::Y);
+double BoundedBox::getYMin() {
+	return getMin(v, Vertex::Y);
 }
-int BoundedBox::getXMax() {
-	return getMax(vertices, Vertex::X);
+double BoundedBox::getXMax() {
+	return getMax(v, Vertex::X);
 }
-int BoundedBox::getYMax() {
-	return getMax(vertices, Vertex::Y);
-}
-
-int BoundedBox::getZMax() {
-	return getMax(vertices, Vertex::Z);
+double BoundedBox::getYMax() {
+	return getMax(v, Vertex::Y);
 }
 
-int BoundedBox::getZMin() {
-	return getMin(vertices, Vertex::Z);
+double BoundedBox::getZMax() {
+	return getMax(v, Vertex::Z);
 }
 
-int BoundedBox::getMin(vector<shared_ptr<Vertex>> vertices, int property) {
-	if (vertices.empty()) return 0;
+double BoundedBox::getZMin() {
+	return getMin(v, Vertex::Z);
+}
 
-	int minNum = INT_MAX;
+double BoundedBox::getMin(vector<shared_ptr<Vertex>> vertices, int property) {
+	if (vertices.empty()) throw exception("No vertices foudn");
+
+	double minNum = 10000;
 	for (int i = 0; i < vertices.size(); i++) {
 		minNum = min(minNum, vertices.at(i)->getProperty(property));
 	}
@@ -43,10 +48,10 @@ int BoundedBox::getMin(vector<shared_ptr<Vertex>> vertices, int property) {
 	return minNum;
 }
 
-int BoundedBox::getMax(vector<shared_ptr<Vertex>> vertices, int property) {
-	if (vertices.empty()) return 0;
+double BoundedBox::getMax(vector<shared_ptr<Vertex>> vertices, int property) {
+	if (vertices.empty()) throw exception("No vertices foudn");
 
-	int maxNum = INT_MIN;
+	double maxNum = -10000;
 	for (int i = 0; i < vertices.size(); i++) {
 		maxNum = max(maxNum, vertices.at(i)->getProperty(property));
 	}
@@ -54,14 +59,23 @@ int BoundedBox::getMax(vector<shared_ptr<Vertex>> vertices, int property) {
 	return maxNum;
 }
 
-int BoundedBox::getWidth() {
+double BoundedBox::getWidth() {
 	return  getXMax() - getXMin();
 }
 
-int BoundedBox::getHeight() {
+double BoundedBox::getHeight() {
 	return getYMax() - getYMin();
 }
 
 shared_ptr<Color> BoundedBox::getColor() {
 	return color;
+}
+
+shared_ptr<Vertex> BoundedBox::isInsideShape(shared_ptr<Vertex> v) {
+		return v;
+}
+double BoundedBox::getTotalArea() {
+
+
+	return getWidth() * getHeight();
 }

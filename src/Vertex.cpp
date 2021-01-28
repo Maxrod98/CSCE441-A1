@@ -1,24 +1,27 @@
 #include "Vertex.h"
 
-Vertex::Vertex( int x, int y, int r, int g, int b): color(make_shared<Color>(r, g, b)), x(x), y(y) {
+Vertex::Vertex( double x, double y, int r, int g, int b): color(make_shared<Color>(r, g, b)), x(x), y(y) {
 
 }
 
-Vertex::Vertex(int x, int y, int z, int r, int g, int b) : color(make_shared<Color>(r,g, b)), x(x), y(y), z(z) {
+Vertex::Vertex(double x, double y, double z, int r, int g, int b) : color(make_shared<Color>(r,g,b)), x(x), y(y), z(z) {
 
 }
 
-Vertex::Vertex(int x, int y, shared_ptr<Color> color) : x(x), y(y), color(color) {
+Vertex::Vertex(double x, double y, shared_ptr<Color> color) : x(x), y(y), color(color) {
 
 }
 
-int Vertex::getX() {
+Vertex::Vertex(shared_ptr<Vertex> v): color(v->getColor()), x(v->getX()), y(v->getY()), z(v->getZ()) { //deep copy constructor
+}
+
+double Vertex::getX() {
 	return x;
 }
-int Vertex::getY() {
+double Vertex::getY() {
 	return y;
 }
-int Vertex::getZ() {
+double Vertex::getZ() {
 	return z;
 }
 
@@ -26,18 +29,18 @@ shared_ptr<Color> Vertex::getColor() {
 	return color;
 }
 
-void Vertex::setX(int x) {
+void Vertex::setX(double x) {
 	this->x = x;
 }
-void Vertex::setY(int y) {
+void Vertex::setY(double y) {
 	this->y = y;
 }
-void Vertex::setZ(int z) {
+void Vertex::setZ(double z) {
 	this->z = z;
 }
 
 
-int Vertex::getProperty(int property) {
+double Vertex::getProperty(int property) {
 	switch (property)
 	{
 	case (X):
@@ -50,7 +53,8 @@ int Vertex::getProperty(int property) {
 		return z;
 		break;
 	default:
-		return 0;
+		throw exception("No property found");
+		return -990;
 		break;
 	}
 }

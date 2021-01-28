@@ -1,22 +1,28 @@
 #pragma once
 #include <exception>
+#include <memory>
 
 using namespace std;
 
 class Color
 {
-	int r;
-	int g;
-	int b;
+	unsigned short r;
+	unsigned short g;
+	unsigned short b;
+
+	static double RANDOM_COLORS[7][3];
 
 public:
-	const static Color RED;
-	const static Color GREEN;
-	const static Color BLUE;
+	const static shared_ptr<Color> RED;
+	const static shared_ptr<Color> GREEN;
+	const static shared_ptr<Color> BLUE;
+
+	Color(shared_ptr<Color> c) : r(c->getR()), g(c->getG()), b(c->getB()) { //deep copy constructor
+	}
 
 	Color(){}
 
-	Color(int r, int g, int b) {
+	Color(unsigned short r, unsigned int g, unsigned short b): r(r), g(g), b(b) {
 
 	}
 
@@ -27,27 +33,42 @@ public:
 		b = c[2];
 	}
 
-	int getR() {
+	unsigned short getR() {
 		return r;
 	}
-	int getG() {
+	unsigned short getG() {
 		return g;
 	}
-	int getB() {
+	unsigned short getB() {
 		return b;
 	}
 
-	void setR(int r) {
+	void setR(short r) {
 		this->r = r;
 	}
 
-	void setG(int g) {
+	void setG(short g) {
 		this->g = g;
 	}
 
-	void setB(int b) {
+	void setB(short b) {
 		this->b = b;
 	}
 
+	Color set(short r, short g, short b) {
+		this->r = r;
+		this->g = g;
+		this->b = b;
+		return *this;
+	}
+
+	bool operator==(shared_ptr<Color> other) {
+		return (getR() == other->getR() && getG() == other->getB() && getB() == other->getG());
+	}
+
+	static shared_ptr<Color> getRandomColor(int pos)
+	{
+		return make_shared<Color>(RANDOM_COLORS[pos][0] * 255, RANDOM_COLORS[pos][1] * 255, RANDOM_COLORS[pos][2] * 255);
+	}
 };
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <algorithm>
 #include "Vertex.h"
 
 class Shape
@@ -16,6 +17,7 @@ public:
 	void applyRatio(double ratio);
 	void applyTranslation(double overX, double overY, double overZ);
 	vector<shared_ptr<Vertex>> getVertices();
+	void normalize(double minX, double minY);
+
 };
 
-//TODO: make sure your shapes inherit from here
