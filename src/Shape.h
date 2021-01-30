@@ -8,15 +8,15 @@ class Shape
 {
 protected:
 	Shape();
-	Shape(vector<shared_ptr<Vertex>> v);
-	vector<shared_ptr<Vertex>> v = vector<shared_ptr<Vertex>>();
+	Shape(shared_ptr<vector<shared_ptr<Vertex>>> v);
+	shared_ptr<vector<shared_ptr<Vertex>>> v = shared_ptr<vector<shared_ptr<Vertex>>>();
 
 public:
 	virtual shared_ptr<Vertex> isInsideShape(shared_ptr<Vertex> v) = 0;
 	virtual double getTotalArea() = 0;
 	void applyRatio(double ratio);
 	void applyTranslation(double overX, double overY, double overZ);
-	vector<shared_ptr<Vertex>> getVertices();
+	shared_ptr<vector<shared_ptr<Vertex>>> getVertices();
 	void normalize(double minX, double minY);
 
 };

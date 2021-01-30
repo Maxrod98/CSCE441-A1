@@ -30,8 +30,8 @@ void ShapeDrawer::modifyVertices() {
 
 
 void ShapeDrawer::drawTriangle(shared_ptr<Triangle> t) {
-	for (int y = (t->getBoundedBox()->getYMin()); y < (t->getBoundedBox()->getYMax() ); ++y) {
-		for (int x = (t->getBoundedBox()->getXMin() ); x < (t->getBoundedBox()->getXMax()); ++x) {
+	for (int y = (t->getBoundedBox()->getYMin()); y < (t->getBoundedBox()->getYMax() ); y++) {
+		for (int x = (t->getBoundedBox()->getXMin() ); x < (t->getBoundedBox()->getXMax()); x++) {
 			shared_ptr<Vertex> isInside = t->isInsideShape(make_shared<Vertex>(x, y, 0, 0, 0, 0));
 			if (isInside) {
 				onDrawTriangle(isInside);
@@ -42,8 +42,8 @@ void ShapeDrawer::drawTriangle(shared_ptr<Triangle> t) {
 
 void ShapeDrawer::drawBoundBox(shared_ptr<BoundedBox> b) {
 
-	for (int y = b->getYMin(); y < b->getYMax(); ++y) {
-		for (int x = b->getXMin(); x < b->getXMax(); ++x) {
+	for (int y = b->getYMin(); y < b->getYMax(); y++) {
+		for (int x = b->getXMin(); x < b->getXMax(); x++) {
 			onDrawBoundBox(make_shared<Vertex>(x, y, b->getColor()));
 		}
 	}

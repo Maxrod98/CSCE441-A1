@@ -55,11 +55,10 @@ public:
 		this->b = b;
 	}
 
-	Color set(short r, short g, short b) {
+	void set(short r, short g, short b) {
 		this->r = r;
 		this->g = g;
 		this->b = b;
-		return *this;
 	}
 
 	bool operator==(shared_ptr<Color> other) {

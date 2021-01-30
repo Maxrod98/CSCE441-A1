@@ -12,8 +12,8 @@ class BoundedBox: public Shape
 
 public:
 	BoundedBox();
-	BoundedBox(vector<shared_ptr<Vertex>> vertices);
-	BoundedBox(vector<shared_ptr<Vertex>> vertices, shared_ptr<Color> color);
+	BoundedBox(shared_ptr<vector<shared_ptr<Vertex>>> vertices);
+	BoundedBox(shared_ptr<vector<shared_ptr<Vertex>>> vertices, shared_ptr<Color> _color);
 	double getXMin();
 	double getYMin();
 	double getZMin();
@@ -22,8 +22,8 @@ public:
 	double getYMax();
 	double getZMax();
 	
-	double getMin(vector<shared_ptr<Vertex>> vertices, int property);
-	double getMax(vector<shared_ptr<Vertex>> vertices, int property);
+	double getMin(int property);
+	double getMax(int property);
 
 	double getWidth();
 	double getHeight();

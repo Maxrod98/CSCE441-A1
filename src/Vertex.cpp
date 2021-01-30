@@ -8,6 +8,8 @@ Vertex::Vertex(double x, double y, double z, int r, int g, int b) : color(make_s
 
 }
 
+
+
 Vertex::Vertex(double x, double y, shared_ptr<Color> color) : x(x), y(y), color(color) {
 
 }

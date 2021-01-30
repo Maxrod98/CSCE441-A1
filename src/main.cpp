@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 	string outputName(argv[2]);
 	int imageWidth(atoi(argv[3]));
 	int imageHeight(atoi(argv[4]));
-	int taskNum = /* atoi(argv[5]) */ 1;
+	int taskNum = /* atoi(argv[5]) */ 3;
 
 	// Load geometry
 	vector<float> posBuf; // list of vertex positions
@@ -109,16 +109,12 @@ int main(int argc, char **argv)
 
 	for (int i = 0; i < posBuf.size(); i++) {
 		
-		int colMod = (i % 7);
-		color = *Color::getRandomColor(colMod);
-		//color.set(255, 255, 255);
-
 		int mod = (i % 3);
 		switch (mod)
 		{
 		case (0):
 			//make_shared<Color>(RANDOM_COLORS[(i % 3) % 7])
-			vertices->push_back(make_shared<Vertex>(posBuf.at(i) , 0, 0, color.getR(), color.getG(), color.getB() ));
+			vertices->push_back(make_shared<Vertex>(posBuf.at(i) , 0, 0, 0, 0, 0 ));
 
 			break;
 		case (1):
@@ -134,7 +130,10 @@ int main(int argc, char **argv)
 		}
 	}
 
-	MyDrawer td = MyDrawer(imageWidth, imageHeight, make_shared<BoundedBox>(*vertices));
+	double test = 0.0000000000000;
+	test = test * 329.34234234;
+
+	MyDrawer td = MyDrawer(imageWidth, imageHeight, make_shared<BoundedBox>(vertices));
 	td.modifyVertices();
 
 	vector<shared_ptr<vector<shared_ptr<Vertex>>>> triplets = vector<shared_ptr<vector<shared_ptr<Vertex>>>>();
@@ -165,24 +164,36 @@ int main(int argc, char **argv)
 		cout << "Task 1" << endl;
 		for (int i = 0; i < triplets.size(); i++) {
 			auto col = Color::getRandomColor(i % 7);
-			auto bounded = make_shared<BoundedBox>(*triplets.at(i), col);
+			auto bounded = make_shared<BoundedBox>(triplets.at(i), col);
 			td.drawBoundBox(bounded);
 		}
 		break;
 	case (2):
 		cout << "Task 2" << endl;
+		
+
+		for (int i = 0; i < triplets.size(); i++) {
+			auto col = Color::getRandomColor(i % 7);
+			auto bounded = make_shared<Triangle>(triplets.at(i), col);
+			td.drawTriangle(bounded);
+		}
+
 		break;
 
 	case(3):
 		cout << "Task 3" << endl;
+		int curCol = 0;
 
-		for (int i = 0; i < vertices->size() / 3; i++) {
-			auto test = make_shared<Triangle>(*slice(vertices, i, i + 3 - 1));
-			td.drawTriangle(test);
-			//auto bounded = make_shared<BoundedBox>(slice(*vertices, i, i + 3 - 1), Color::RED);
-			//td.drawBoundBox(make_shared<BoundedBox>(*slice(vertices, i, i + 3 - 1), Color::RED));
+		for (int i = 0; i < triplets.size(); i++) {
+			auto colors = make_shared<vector<shared_ptr<Color>>>();
+			for (int j = 0; j < 3; j++) {
+				colors->push_back(Color::getRandomColor(curCol % 7));
+				curCol++;
+			}
+
+			auto bounded = make_shared<Triangle>(triplets.at(i), colors);
+			td.drawTriangle(bounded);
 		}
-
 
 		break;
 	}
