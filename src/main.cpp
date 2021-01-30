@@ -207,15 +207,16 @@ int main(int argc, char** argv)
 		cout << "Task 4" << endl;
 
 		auto boundedBox = make_shared<BoundedBox>(vertices);
+		double yMin = (double)boundedBox->getYMin();
+		double height = (double)boundedBox->getHeight();
 
 		for (int i = 0; i < triplets.size(); i++) {
 			auto colors = make_shared<vector<shared_ptr<Color>>>();
 
-			for (int j = 0; j < triplets.at(i)->size(); j++) {
+			for (int j = 0; j < 3; j++) {
 				double yPos = triplets.at(i)->at(j)->getY();
-				double yRelative = yPos - (double)boundedBox->getYMin();
-
-				double ratioY =  ((double)boundedBox->getHeight() - yRelative)/ (double)boundedBox->getHeight();
+				double yRelative = yPos - yMin;
+				double ratioY =  (height - yRelative)/ height;
 
 				colors->push_back(make_shared<Color>(255 * (1 - ratioY), 0, 255 * ratioY));
 			}
@@ -226,6 +227,9 @@ int main(int argc, char** argv)
 
 		break;
 	}
+
+
+
 
 	}
 
