@@ -18,7 +18,6 @@ public:
 	Triangle(shared_ptr<vector<shared_ptr<Vertex>>> v);
 	Triangle(shared_ptr<vector<shared_ptr<Vertex>>> v, shared_ptr<Color> c);
 	Triangle(shared_ptr<vector<shared_ptr<Vertex>>> v, shared_ptr<vector<shared_ptr<Color>>> colors);
-	Triangle(shared_ptr<Triangle> t); //copy constructor
 	shared_ptr<BoundedBox> getBoundedBox();
 
 	//inherited

@@ -10,16 +10,6 @@ using namespace std;
 Triangle::Triangle() {
 }
 
-
-
-Triangle::Triangle(shared_ptr<Triangle> t) { //deep copy constructor
-	if (t->getVertices()->size() != 3) throw exception("Triangle does not have 3 vertices");
-	
-	for (int i = 0; i < t->getVertices()->size(); i++) {
-		v->push_back(make_shared<Vertex>(t->getVertices()->at(i)));
-	}
-}
-
 Triangle::Triangle(shared_ptr<vector<shared_ptr<Vertex>>> v, shared_ptr<Color> c) : Triangle(v) {
 	for (int i = 0; i < v->size(); i++) {
 		v->at(i)->getColor()->set(c->getR(), c->getG(), c->getB());

@@ -6,9 +6,6 @@
 
 using namespace std;
 
-BoundedBox::BoundedBox() {
-}
-
 BoundedBox::BoundedBox(shared_ptr<vector<shared_ptr<Vertex>>> vertices): Shape(vertices) {
 }
 
@@ -35,6 +32,16 @@ double BoundedBox::getZMax() {
 
 double BoundedBox::getZMin() {
 	return getMin(Vertex::Z);
+}
+
+void BoundedBox::scaleAndTranslate(int desiredWidth, int desiredHeight) {
+	normalize(getXMin(), getYMin());
+	double ratio = min((double) desiredWidth / getWidth(), (double) desiredHeight / getHeight());
+	applyRatio(ratio);
+
+	double translationY = ((double)desiredHeight - getHeight()) / 2.0;
+	double translationX = ((double)desiredWidth - getWidth()) / 2.0;
+	applyTranslation(translationX, translationY, 0);
 }
 
 double BoundedBox::getMin( int property) {

@@ -17,20 +17,6 @@ using namespace std;
 
 shared_ptr<Image> image;
 
-class SimpleDrawer : public ShapeDrawer {
-public:
-	SimpleDrawer(int width, int height, shared_ptr<BoundedBox> box) : ShapeDrawer(width, height, box) {
-	}
-
-	void onDrawTriangle(shared_ptr<Vertex> v) {
-		image->setPixel(v->getX(), v->getY(), v->getColor()->getR(), v->getColor()->getG(), v->getColor()->getB());
-	}
-
-	void onDrawBoundBox(shared_ptr<Vertex> v) {
-		image->setPixel(v->getX(), v->getY(), v->getColor()->getR(), v->getColor()->getG(), v->getColor()->getB());
-	}
-};
-
 class ZBufferDrawer : public ShapeDrawer {
 public:
 	shared_ptr<ZBuffer> zbuffer;
@@ -45,7 +31,12 @@ public:
 			zbuffer->setAt(v->getX(), v->getY(), v->getZ());
 		}
 	}
+
+	void onDrawBoundBox(shared_ptr<Vertex> v) {
+		image->setPixel(v->getX(), v->getY(), v->getColor()->getR(), v->getColor()->getG(), v->getColor()->getB());
+	}
 };
+
 
 
 int main(int argc, char** argv)
@@ -54,11 +45,13 @@ int main(int argc, char** argv)
 		cout << "Usage: A1 meshfile" << endl;
 		return 0;
 	}
-	string meshName(argv[1]);
-	string outputName(argv[2]);
-	int imageWidth(atoi(argv[3]));
-	int imageHeight(atoi(argv[4]));
-	int taskNum =  atoi(argv[5]) ;
+
+	//command line arguments:
+	string meshName (argv[1]);
+	string outputName (argv[2]);
+	int imageWidth (atoi(argv[3]));
+	int imageHeight (atoi(argv[4]));
+	int taskNum (atoi(argv[5]));
 
 	// Load geometry
 	vector<float> posBuf; // list of vertex positions
@@ -110,211 +103,159 @@ int main(int argc, char** argv)
 
 	image = make_shared<Image>(imageWidth, imageHeight);
 
-	auto vertices = make_shared<vector<shared_ptr<Vertex>>>();
-	auto normals = make_shared<vector<shared_ptr<Vertex>>>();
+	//getting the vertices separately
+	auto vertices = ShapeDrawer::convertToVertices(posBuf);
+	auto normals = ShapeDrawer::convertToVertices(norBuf);
 
-	for (int i = 0; i < posBuf.size(); i++) {
+	//converting to triplets to simplify our work when making triangles
+	auto triplets = ShapeDrawer::convertToTriplets(vertices);
+	auto normalTriplets = ShapeDrawer::convertToTriplets(normals);
 
-		int mod = (i % 3);
-		switch (mod)
-		{
-		case (0):
-			vertices->push_back(make_shared<Vertex>(posBuf.at(i), 0, 0, 0, 0, 0));
-			normals->push_back(make_shared<Vertex>(norBuf.at(i), 0, 0, 0, 0, 0));
-			break;
-		case (1):
-			vertices->at(vertices->size() - 1)->setY(posBuf.at(i));
-			normals->at(normals->size() - 1)->setY(norBuf.at(i));
-			break;
-		case (2):
-			vertices->at(vertices->size() - 1)->setZ(posBuf.at(i));
-			normals->at(normals->size() - 1)->setZ(norBuf.at(i));
-
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	vector<shared_ptr<vector<shared_ptr<Vertex>>>> triplets = vector<shared_ptr<vector<shared_ptr<Vertex>>>>();
-	vector<shared_ptr<vector<shared_ptr<Vertex>>>> normalTriplets = vector<shared_ptr<vector<shared_ptr<Vertex>>>>();
-
-	for (int i = 0; i < vertices->size(); i++) {
-		short mod = i % 3;
-
-		switch (mod)
-		{
-		case (0): {
-			auto cur = make_shared<vector<shared_ptr<Vertex>>>();
-			cur->push_back(vertices->at(i));
-			triplets.push_back(cur);
-
-			auto norCur = make_shared<vector<shared_ptr<Vertex>>>();
-			norCur->push_back(normals->at(i));
-			normalTriplets.push_back(norCur);
-
-			break;
-		}
-		case (1):
-		case (2):
-			triplets.at(triplets.size() - 1)->push_back(vertices->at(i));
-
-			normalTriplets.at(normalTriplets.size() - 1)->push_back(normals->at(i));
-			break;
-		default:
-			break;
-		}
-	}
-
+	//create container for vertices, then scale and translate them appropiately
 	auto boundedBox = make_shared<BoundedBox>(vertices);
+	boundedBox->scaleAndTranslate(imageWidth, imageHeight);
 
-	SimpleDrawer simpleDrawer = SimpleDrawer(imageWidth, imageHeight, boundedBox);
-	simpleDrawer.modifyVertices(); //modifies them by reference, so we only have to do this once
-
+	//note that ZBufferDrawer inherits from ShapeDrawer
 	ZBufferDrawer zDrawer = ZBufferDrawer(imageWidth, imageHeight, boundedBox);
 
-
 	switch (taskNum) {
-	case (1): {
-		cout << "Task 1" << endl;
-		for (int i = 0; i < triplets.size(); i++) {
-			auto col = Color::getRandomColor(i % 7);
-			auto bounded = make_shared<BoundedBox>(triplets.at(i), col);
-			simpleDrawer.drawBoundBox(bounded);
-		}
-		break;
-	}
-	case (2):
-	{
-		cout << "Task 2" << endl;
-
-		for (int i = 0; i < triplets.size(); i++) {
-			auto col = Color::getRandomColor(i % 7);
-			auto bounded = make_shared<Triangle>(triplets.at(i), col);
-			simpleDrawer.drawTriangle(bounded);
-		}
-
-		break;
-	}
-
-	case(3):
-	{
-		cout << "Task 3" << endl;
-		int curCol = 0;
-
-		for (int i = 0; i < triplets.size(); i++) {
-			auto colors = make_shared<vector<shared_ptr<Color>>>();
-			for (int j = 0; j < 3; j++) {
-				colors->push_back(Color::getRandomColor(curCol % 7));
-				curCol++;
+		//Task 1: Drawing Bounding Boxes
+		case (1): 
+		{
+			for (int i = 0; i < triplets.size(); i++) {
+				//single color per box
+				auto col = Color::getRandomColor(i % 7);
+				auto bounded = make_shared<BoundedBox>(triplets.at(i), col);
+				zDrawer.drawBoundBox(bounded);
 			}
-
-			auto bounded = make_shared<Triangle>(triplets.at(i), colors);
-			simpleDrawer.drawTriangle(bounded);
 		}
-
-		break;
-	}
-
-	case(4):
-	{
-		cout << "Task 4" << endl;
-
-		double yMin = (double)boundedBox->getYMin();
-		double height = (double)boundedBox->getHeight();
-
-		for (int i = 0; i < triplets.size(); i++) {
-			auto colors = make_shared<vector<shared_ptr<Color>>>();
-
-			for (int j = 0; j < 3; j++) {
-				double yPos = triplets.at(i)->at(j)->getY();
-				double yRelative = yPos - yMin;
-				double ratioY =  (height - yRelative)/ height;
-
-				colors->push_back(make_shared<Color>(255 * (1 - ratioY), 0, 255 * ratioY));
+	break;
+		//Task 2: Drawing Triangles
+		case (2):
+		{
+			for (int i = 0; i < triplets.size(); i++) {
+				//single color per triangle
+				auto col = Color::getRandomColor(i % 7);
+				auto bounded = make_shared<Triangle>(triplets.at(i), col);
+				zDrawer.drawTriangle(bounded);
 			}
-
-			auto triangle = make_shared<Triangle>(triplets.at(i), colors);
-			simpleDrawer.drawTriangle(triangle);
 		}
+	break;
+		//Task 3: Interpolating Per - Vertex Colors
+		case(3):
+		{
+			int curCol = 0;
+			for (int i = 0; i < triplets.size(); i++) {
+				//each vertex will have its own color, obtained in this for loop
+				auto colors = make_shared<vector<shared_ptr<Color>>>();
+				for (int j = 0; j < 3; j++) {
+					colors->push_back(Color::getRandomColor(curCol % 7));
+					curCol++;
+				}
+				auto bounded = make_shared<Triangle>(triplets.at(i), colors);
+				zDrawer.drawTriangle(bounded);
+			}
+		}
+	break;
+		//Task 4: Vertical Color
+		case(4):
+		{
+			double yMin = (double)boundedBox->getYMin();
+			double height = (double)boundedBox->getHeight();
 
-		break;
-	}
+			for (int i = 0; i < triplets.size(); i++) {
+				auto colors = make_shared<vector<shared_ptr<Color>>>();
+				//for each vertex in the triplet, we obtain the desired color
+				//which we calculate by normalizing the yValue
+				for (int j = 0; j < 3; j++) {
+					double yPos = triplets.at(i)->at(j)->getY();
+					double yRelative = yPos - yMin;
+					double ratioY =  (height - yRelative)/ height;
+					colors->push_back(make_shared<Color>(255 * (1 - ratioY), 0, 255 * ratioY));
+				}
 
+				auto triangle = make_shared<Triangle>(triplets.at(i), colors);
+				zDrawer.drawTriangle(triangle);
+			}
+		}
+	break;
+
+	//Task 5: Z-Buffering
 	case (5): 
-	{
-		cout << "Task 5" << endl;
+		{
+			double minZ = boundedBox->getZMin();
+			double depth = boundedBox->getDepth();
 
-		double minZ = boundedBox->getZMin();
-		double depth = boundedBox->getDepth();
+			for (int i = 0; i < triplets.size(); i++) {
+				auto colors = make_shared<vector<shared_ptr<Color>>>();
+				//we get the desired red color by normalizing the value of the zVal
+				for (int j = 0; j < 3; j++) {
+					double zVal = triplets.at(i)->at(j)->getZ();
+					double normalizedZVal = (zVal - minZ) / depth;
+					colors->push_back(make_shared<Color>(normalizedZVal * 255, 0, 0));
+				}
 
-		for (int i = 0; i < triplets.size(); i++) {
-			auto colors = make_shared<vector<shared_ptr<Color>>>();
-			for (int j = 0; j < 3; j++) {
-				double zVal = triplets.at(i)->at(j)->getZ();
-				double normalizedZVal = (zVal - minZ) / depth;
-				colors->push_back(make_shared<Color>(normalizedZVal * 255, 0, 0));
+				auto bounded = make_shared<Triangle>(triplets.at(i), colors);
+				zDrawer.drawTriangle(bounded);
 			}
-
-			auto bounded = make_shared<Triangle>(triplets.at(i), colors);
-			zDrawer.drawTriangle(bounded);
 		}
-	}
-
+	break;
+	//Task 6: Normal Coloring
 	case (6):
-	{
-		cout << "Task 6" << endl;
-
-		for (int i = 0; i < triplets.size(); i++) {
-			auto colors = make_shared<vector<shared_ptr<Color>>>();
-			for (int j = 0; j < 3; j++) {
-				double x = normalTriplets.at(i)->at(j)->getX();
-				double y = normalTriplets.at(i)->at(j)->getY();
-				double z = normalTriplets.at(i)->at(j)->getZ();
+		{
+			for (int i = 0; i < triplets.size(); i++) {
+				auto colors = make_shared<vector<shared_ptr<Color>>>();
+				//for each single vertex, the desired color is = 255 * (0.5 * coordinate + 0.5)
+				for (int j = 0; j < 3; j++) {
+					double x = normalTriplets.at(i)->at(j)->getX();
+					double y = normalTriplets.at(i)->at(j)->getY();
+					double z = normalTriplets.at(i)->at(j)->getZ();
 				
-				double xT = 255 * (0.5 * x + 0.5);
-				double yT = 255 * (0.5 * y + 0.5);
-				double zT = 255 * (0.5 * z + 0.5);
+					double xT = 255 * (0.5 * x + 0.5);
+					double yT = 255 * (0.5 * y + 0.5);
+					double zT = 255 * (0.5 * z + 0.5);
 
-				//TODO: use normals as colors
-				colors->push_back(make_shared<Color>(xT, yT , zT));
+					colors->push_back(make_shared<Color>(xT, yT , zT));
+				}
+
+				auto tri = make_shared<Triangle>(triplets.at(i), colors);
+				zDrawer.drawTriangle(tri);
 			}
-
-			auto tri = make_shared<Triangle>(triplets.at(i), colors);
-			zDrawer.drawTriangle(tri);
 		}
-	}
+	break;
+	//Task 7: Simple Lighting
+	case(7):
+		{
+			for (int i = 0; i < triplets.size(); i++) {
+				auto colors = make_shared<vector<shared_ptr<Color>>>();
+				//for each single vertex, we get the desired color by max(l * n, 0)
+				for (int j = 0; j < 3; j++) {
+					double x = normalTriplets.at(i)->at(j)->getX();
+					double y = normalTriplets.at(i)->at(j)->getY();
+					double z = normalTriplets.at(i)->at(j)->getZ();
+				
+					double denominator = (1 / (sqrt(3)));
+
+					double xT = 255 * x * denominator;
+					double yT = 255 * y * denominator;
+					double zT = 255 * z * denominator;
+
+					double dotProduct = max(xT + yT + zT, 0.0);
+
+					//TODO: use normals as colors
+					colors->push_back(make_shared<Color>(dotProduct, dotProduct, dotProduct));
+				}
+
+				auto tri = make_shared<Triangle>(triplets.at(i), colors);
+				zDrawer.drawTriangle(tri);
+			}
+		}
+
 	break;
 	
-	case(7):
-	{
-		cout << "Task 7" << endl;
-
-		for (int i = 0; i < triplets.size(); i++) {
-			auto colors = make_shared<vector<shared_ptr<Color>>>();
-			for (int j = 0; j < 3; j++) {
-				double x = normalTriplets.at(i)->at(j)->getX();
-				double y = normalTriplets.at(i)->at(j)->getY();
-				double z = normalTriplets.at(i)->at(j)->getZ();
-				
-				double denominator = (1 / (sqrt(3)));
-
-				double xT = 255 * x * denominator;
-				double yT = 255 * y * denominator;
-				double zT = 255 * z * denominator;
-
-				double sum = max(xT + yT + zT, 0.0);
-
-				//TODO: use normals as colors
-				colors->push_back(make_shared<Color>(sum, sum, sum));
-			}
-
-			auto tri = make_shared<Triangle>(triplets.at(i), colors);
-			zDrawer.drawTriangle(tri);
-		}
-	}
-
+	default:
+			cout << "No task found!" << endl;
+	break;
 	}
 
 	image->writeToFile(outputName);

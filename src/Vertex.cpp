@@ -1,6 +1,6 @@
 #include "Vertex.h"
 
-Vertex::Vertex( double x, double y, int r, int g, int b): color(make_shared<Color>(r, g, b)), x(x), y(y) {
+Vertex::Vertex( double x, double y, int r, int g, int b): color(make_shared<Color>(r, g, b)), x(x), y(y), z(0.0) {
 
 }
 
@@ -8,13 +8,8 @@ Vertex::Vertex(double x, double y, double z, int r, int g, int b) : color(make_s
 
 }
 
+Vertex::Vertex(double x, double y, shared_ptr<Color> color) : x(x), y(y), z(0.0), color(color) {
 
-
-Vertex::Vertex(double x, double y, shared_ptr<Color> color) : x(x), y(y), color(color) {
-
-}
-
-Vertex::Vertex(shared_ptr<Vertex> v): color(v->getColor()), x(v->getX()), y(v->getY()), z(v->getZ()) { //deep copy constructor
 }
 
 double Vertex::getX() {

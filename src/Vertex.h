@@ -21,7 +21,6 @@ public:
 	Vertex(double x, double y, int r, int g, int b);
 	Vertex(double x, double y, double z, int r, int g, int b);
 	Vertex(double x, double y, shared_ptr<Color> color);
-	Vertex(shared_ptr<Vertex> v); //deep copy constructor
 
 	double getX();
 	double getY();

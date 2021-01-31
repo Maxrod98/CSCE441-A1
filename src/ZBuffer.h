@@ -20,7 +20,7 @@ public:
 		for (int i = 0; i < width; i++) {
 			zbuffer->push_back(make_shared<vector<double>>());
 			for (int j = 0; j < height; j++) {
-				zbuffer->at(zbuffer->size() - 1)->push_back(INT_MIN);
+				zbuffer->at(zbuffer->size() - 1)->push_back(-1000000);
 			}
 		}
 	}

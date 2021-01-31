@@ -23,9 +23,7 @@ void Shape::applyTranslation(double overX, double overY, double overZ) {
 		v->at(i)->setX(v->at(i)->getX() + overX);
 		v->at(i)->setY(v->at(i)->getY() + overY);
 		v->at(i)->setZ(v->at(i)->getZ() + overZ);
-
 	}
-	
 }
 shared_ptr<vector<shared_ptr<Vertex>>> Shape::getVertices() {
 	return v;

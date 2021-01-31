@@ -13,13 +13,10 @@ public:
 	ShapeDrawer() {}
 	ShapeDrawer(int desiredWidth, int desiredHeight, shared_ptr<BoundedBox> boundedBox);
 
-	void modifyVertices();
-
-	double getOverallRatio();
-	double getRatioX();
-	double getRatioY();
-
-	void scaleAndTranslate(shared_ptr<Shape> s);
 	void drawTriangle(shared_ptr<Triangle> t);
 	void drawBoundBox(shared_ptr<BoundedBox> b);
+
+	static shared_ptr<vector<shared_ptr<Vertex>>> ShapeDrawer::convertToVertices(vector<float> & buf);
+	static vector<shared_ptr<vector<shared_ptr<Vertex>>>> ShapeDrawer::convertToTriplets(shared_ptr<vector<shared_ptr<Vertex>>> vertices);
+
 };

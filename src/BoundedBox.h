@@ -11,7 +11,7 @@ class BoundedBox: public Shape
 	shared_ptr<Color> color;
 
 public:
-	BoundedBox();
+	BoundedBox() {}
 	BoundedBox(shared_ptr<vector<shared_ptr<Vertex>>> vertices);
 	BoundedBox(shared_ptr<vector<shared_ptr<Vertex>>> vertices, shared_ptr<Color> _color);
 	double getXMin();
@@ -34,6 +34,8 @@ public:
 	//inherited methods
 	shared_ptr<Vertex> isInsideShape(shared_ptr<Vertex> v);
 	double getTotalArea();
+
+	void scaleAndTranslate(int desiredWidth, int desiredHeight);
 
 };
 
