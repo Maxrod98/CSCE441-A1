@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 	string outputName(argv[2]);
 	int imageWidth(atoi(argv[3]));
 	int imageHeight(atoi(argv[4]));
-	int taskNum = /* atoi(argv[5]) */ 1;
+	int taskNum =  atoi(argv[5]) ;
 
 	// Load geometry
 	vector<float> posBuf; // list of vertex positions
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
 		case (2):
 			triplets.at(triplets.size() - 1)->push_back(vertices->at(i));
 
-			normalTriplets.at(normalTriplets.size() - 1)->push_back(vertices->at(i));
+			normalTriplets.at(normalTriplets.size() - 1)->push_back(normals->at(i));
 			break;
 		default:
 			break;
@@ -280,9 +280,13 @@ int main(int argc, char** argv)
 				double x = normalTriplets.at(i)->at(j)->getX();
 				double y = normalTriplets.at(i)->at(j)->getY();
 				double z = normalTriplets.at(i)->at(j)->getZ();
+				
+				double xT = 255 * (0.5 * x + 0.5);
+				double yT = 255 * (0.5 * y + 0.5);
+				double zT = 255 * (0.5 * z + 0.5);
 
 				//TODO: use normals as colors
-				colors->push_back(make_shared<Color>(255 * (0.5 * x + 0.5), 255 * (0.5 * y + 0.5), 255 * (0.5 * z + 0.5)));
+				colors->push_back(make_shared<Color>(xT, yT , zT));
 			}
 
 			auto tri = make_shared<Triangle>(triplets.at(i), colors);
