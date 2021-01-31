@@ -9,7 +9,7 @@
 
 using namespace std;
 
-ShapeDrawer::ShapeDrawer(int desiredWidth, int desiredHeight, shared_ptr<BoundedBox> boundedBox) : desiredWidth(desiredWidth), desiredHeight(desiredWidth), boundedBox(boundedBox) {
+ShapeDrawer::ShapeDrawer(int desiredWidth, int desiredHeight, shared_ptr<BoundedBox> boundedBox) : desiredWidth(desiredWidth), desiredHeight(desiredHeight), boundedBox(boundedBox) {
 
 }
 
@@ -17,10 +17,6 @@ void ShapeDrawer::modifyVertices() {
 	boundedBox->normalize(boundedBox->getXMin(), boundedBox->getYMin());
 	double ratio = getOverallRatio();
 	boundedBox->applyRatio(ratio);
-
-	if (boundedBox->getYMax() > 512) {
-		cout << "error" << endl;
-	}
 
 	double translationY = ((double)desiredHeight - boundedBox->getHeight()) / 2.0;
 	double translationX = ((double)desiredWidth - boundedBox->getWidth()) / 2.0;
