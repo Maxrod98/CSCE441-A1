@@ -110,9 +110,6 @@ int main(int argc, char** argv)
 
 	image = make_shared<Image>(imageWidth, imageHeight);
 
-	Color color = Color(0, 0, 0);
-
-
 	auto vertices = make_shared<vector<shared_ptr<Vertex>>>();
 	auto normals = make_shared<vector<shared_ptr<Vertex>>>();
 
@@ -122,7 +119,6 @@ int main(int argc, char** argv)
 		switch (mod)
 		{
 		case (0):
-			//make_shared<Color>(RANDOM_COLORS[(i % 3) % 7])
 			vertices->push_back(make_shared<Vertex>(posBuf.at(i), 0, 0, 0, 0, 0));
 			normals->push_back(make_shared<Vertex>(norBuf.at(i), 0, 0, 0, 0, 0));
 			break;
@@ -140,12 +136,6 @@ int main(int argc, char** argv)
 			break;
 		}
 	}
-
-	double test = 0.0000000000000;
-	test = test * 329.34234234;
-
-	SimpleDrawer simpleDrawer = SimpleDrawer(imageWidth, imageHeight, make_shared<BoundedBox>(vertices));
-	simpleDrawer.modifyVertices(); //modifies them by reference, so we only have to do this once
 
 	vector<shared_ptr<vector<shared_ptr<Vertex>>>> triplets = vector<shared_ptr<vector<shared_ptr<Vertex>>>>();
 	vector<shared_ptr<vector<shared_ptr<Vertex>>>> normalTriplets = vector<shared_ptr<vector<shared_ptr<Vertex>>>>();
@@ -177,6 +167,13 @@ int main(int argc, char** argv)
 		}
 	}
 
+	auto boundedBox = make_shared<BoundedBox>(vertices);
+
+	SimpleDrawer simpleDrawer = SimpleDrawer(imageWidth, imageHeight, boundedBox);
+	simpleDrawer.modifyVertices(); //modifies them by reference, so we only have to do this once
+
+	ZBufferDrawer zDrawer = ZBufferDrawer(imageWidth, imageHeight, boundedBox);
+
 
 	switch (taskNum) {
 	case (1): {
@@ -191,7 +188,6 @@ int main(int argc, char** argv)
 	case (2):
 	{
 		cout << "Task 2" << endl;
-
 
 		for (int i = 0; i < triplets.size(); i++) {
 			auto col = Color::getRandomColor(i % 7);
@@ -225,7 +221,6 @@ int main(int argc, char** argv)
 	{
 		cout << "Task 4" << endl;
 
-		auto boundedBox = make_shared<BoundedBox>(vertices);
 		double yMin = (double)boundedBox->getYMin();
 		double height = (double)boundedBox->getHeight();
 
@@ -250,9 +245,6 @@ int main(int argc, char** argv)
 	case (5): 
 	{
 		cout << "Task 5" << endl;
-
-		auto boundedBox = make_shared<BoundedBox>(vertices);
-		ZBufferDrawer zDrawer = ZBufferDrawer(imageWidth, imageHeight, boundedBox);
 
 		double minZ = boundedBox->getZMin();
 		double depth = boundedBox->getDepth();
@@ -290,9 +282,37 @@ int main(int argc, char** argv)
 			}
 
 			auto tri = make_shared<Triangle>(triplets.at(i), colors);
-			simpleDrawer.drawTriangle(tri);
+			zDrawer.drawTriangle(tri);
 		}
+	}
+	break;
+	
+	case(7):
+	{
+		cout << "Task 7" << endl;
 
+		for (int i = 0; i < triplets.size(); i++) {
+			auto colors = make_shared<vector<shared_ptr<Color>>>();
+			for (int j = 0; j < 3; j++) {
+				double x = normalTriplets.at(i)->at(j)->getX();
+				double y = normalTriplets.at(i)->at(j)->getY();
+				double z = normalTriplets.at(i)->at(j)->getZ();
+				
+				double denominator = (1 / (sqrt(3)));
+
+				double xT = 255 * x * denominator;
+				double yT = 255 * y * denominator;
+				double zT = 255 * z * denominator;
+
+				double sum = max(xT + yT + zT, 0.0);
+
+				//TODO: use normals as colors
+				colors->push_back(make_shared<Color>(sum, sum, sum));
+			}
+
+			auto tri = make_shared<Triangle>(triplets.at(i), colors);
+			zDrawer.drawTriangle(tri);
+		}
 	}
 
 	}
