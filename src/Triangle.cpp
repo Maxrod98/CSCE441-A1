@@ -55,8 +55,9 @@ shared_ptr<Vertex> Triangle::isInsideShape(shared_ptr<Vertex> p) {
 	if (b > 1 || b < 0) return nullptr;
 	if (c > 1 || c < 0) return nullptr;
 
+	double zVal = (a * v->at(0)->getZ() + b * v->at(1)->getZ() + c * v->at(2)->getZ()) / 3;
 
-	shared_ptr<Vertex> newVertex = make_shared<Vertex>(p->getX(), p->getY(), p->getZ(),
+	shared_ptr<Vertex> newVertex = make_shared<Vertex>(p->getX(), p->getY(), zVal ,
 		a * (int)v->at(0)->getColor()->getR() + b *(int)v->at(1)->getColor()->getR()  + c *(int)v->at(2)->getColor()->getR(),
 			a * (int)v->at(0)->getColor()->getG() + b * (int)v->at(1)->getColor()->getG() + c * (int)v->at(2)->getColor()->getG(),
 			a * (int)v->at(0)->getColor()->getB() + b *(int)v->at(1)->getColor()->getB() + c *(int)v->at(2)->getColor()->getB());

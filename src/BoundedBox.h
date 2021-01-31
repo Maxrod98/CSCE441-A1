@@ -27,6 +27,7 @@ public:
 
 	double getWidth();
 	double getHeight();
+	double getDepth();
 	
 	shared_ptr<Color> getColor();
 

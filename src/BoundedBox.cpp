@@ -67,6 +67,10 @@ double BoundedBox::getHeight() {
 	return getYMax() - getYMin();
 }
 
+double BoundedBox::getDepth(){
+	return getZMax() - getZMin();
+}
+
 shared_ptr<Color> BoundedBox::getColor() {
 	return color;
 }
